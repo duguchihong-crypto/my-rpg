@@ -1,1 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
 
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+        content="width=device-width,
+        initial-scale=1.0,
+        user-scalable=no">
+
+    <title>我的RPG</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #111;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        canvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+            background: #6ab04c;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<canvas id="game"></canvas>
+
+<script>
+
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+function resize() {
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+}
+
+resize();
+
+window.addEventListener("resize", resize);
+
+
+// ============================
+// 玩家
+// ============================
+
+const player = {
+
+    x: 150,
+    y: 250,
+
+    size: 40,
+
+    speed: 5
+
+};
+
+
+// ============================
+// 按键
+// ============================
+
+const keys = {
+
+    up: false,
+    down: false,
+    left: false,
+    right: false
+
+};
+
+
+// ============================
+// 键盘控制
+// ============================
+
+document.addEventListener("keydown", function(e) {
+
+    if (e.key === "ArrowUp") {
+        keys.up = true;
+    }
+
+    if (e.key === "ArrowDown") {
+        keys.down = true;
+    }
+
+    if (e.key === "ArrowLeft") {
+        keys.left = true;
+    }
+
+    if (e.key === "ArrowRight") {
+        keys.right = true;
+    }
+
+});
+
+
+document.addEventListener("keyup", function(e) {
+
+    if (e.key === "ArrowUp") {
+        keys.up = false;
+    }
+
+    if (e.key === "ArrowDown") {
+        keys.down = false;
+    }
+
+    if (e.key === "ArrowLeft") {
+        keys.left = false;
+    }
+
+    if (e.key === "ArrowRight") {
+        keys.right = false;
+    }
+
+});
+
+
+// ============================
+// 手机方向键
+// ============================
+
+function button(x, y, w, h, text, direction) {
+
+    ctx.fillStyle = "rgba(0,0,0,0.5)";
+
+    ctx.fillRect(x, y, w, h);
+
+    ctx.fillStyle = "white";
+
+    ctx.font = "28px Arial";
+
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    ctx.fillText(
+        text,
+        x + w / 2,
+        y + h / 2
+    );
+
+}
+
+
+// ============================
+// 更新玩家
+// ============================
+
+function update() {
+
+    if (keys.up) {
+        player.y -= player.speed;
+    }
+
+    if (keys.down) {
+        player.y += player.speed;
+    }
+
+    if (keys.left) {
+        player.x -= player.speed;
+    }
+
+    if (keys.right) {
+        player.x += player.speed;
+    }
+
+
+    // 防止走出屏幕
+
+    player.x = Math.max(
+        0,
+        Math.min(
+            canvas.width - player.size,
+            player.x
+        )
+    );
+
+    player.y = Math.max(
+        0,
+        Math.min(
+            canvas.height - player.size,
+            player.y
+        )
+    );
+
+}
+
+
+// ============================
+// 绘制
+// ============================
+
+function draw() {
+
+    // 地图
+
+    ctx.fillStyle = "#6ab04c";
+
+    ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    // 地面道路
+
+    ctx.fillStyle = "#d9b382";
+
+    ctx.fillRect(
+        0,
+        canvas.height / 2 - 50,
+        canvas.width,
+        100
+    );
+
+
+    // 玩家
+
+    ctx.fillStyle = "#e74c3c";
+
+    ctx.fillRect(
+        player.x,
+        player.y,
+        player.size,
+        player.size
+    );
+
+
+    // 玩家名字
+
+    ctx.fillStyle = "white";
+
+    ctx.font = "16px Arial";
+
+    ctx.textAlign = "center";
+
+    ctx.fillText(
+        "主角",
+        player.x + player.size / 2,
+        player.y - 8
+    );
+
+
+    // 手机方向键
+
+    const size = 60;
+
+    const gap = 10;
+
+    const x = 30;
+
+    const y =
+        canvas.height - 210;
+
+
+    button(
+        x + size + gap,
+        y,
+        size,
+        size,
+        "▲"
+    );
+
+    button(
+        x,
+        y + size + gap,
+        size,
+        size,
+        "◀"
+    );
+
+    button(
+        x + size + gap,
+        y + size + gap,
+        size,
+        size,
+        "●"
+    );
+
+    button(
+        x + (size + gap) * 2,
+        y + size + gap,
+        size,
+        size,
+        "▶"
+    );
+
+    button(
+        x + size + gap,
+        y + (size + gap) * 2,
+        size,
+        size,
+        "▼"
+    );
+
+}
+
+
+// ============================
+// 游戏循环
+// ============================
+
+function gameLoop() {
+
+    update();
+
+    draw();
+
+    requestAnimationFrame(gameLoop);
+
+}
+
+
+gameLoop();
+
+</script>
+
+</body>
+
+</html>
