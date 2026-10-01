@@ -2,6 +2,7 @@
 <html lang="zh-CN">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta name="viewport"
@@ -17,51 +18,205 @@
             box-sizing: border-box;
         }
 
+        html,
         body {
             margin: 0;
-            background: #111;
+            padding: 0;
+
+            width: 100%;
+            height: 100%;
+
+            background: #000;
+
             overflow: hidden;
-            touch-action: none;
         }
 
-        canvas {
+        /* =========================
+           封面
+        ========================= */
+
+        #cover {
+
+            position: fixed;
+
+            left: 0;
+            top: 0;
+
+            width: 100%;
+            height: 100%;
+
+            background: #000;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            z-index: 100;
+        }
+
+        #cover img {
+
+            width: 100%;
+            height: 100%;
+
+            object-fit: cover;
+
+            object-position: center;
+
             display: block;
+        }
+
+        /* =========================
+           开始按钮
+        ========================= */
+
+        #startButton {
+
+            position: absolute;
+
+            left: 50%;
+            bottom: 8%;
+
+            transform: translateX(-50%);
+
+            padding: 14px 45px;
+
+            border: 1px solid
+                rgba(255,255,255,0.7);
+
+            border-radius: 5px;
+
+            background:
+                rgba(0,0,0,0.55);
+
+            color: white;
+
+            font-size: 20px;
+
+            letter-spacing: 4px;
+
+            backdrop-filter: blur(5px);
+        }
+
+        #startButton:active {
+
+            background:
+                rgba(120,0,0,0.7);
+
+            transform:
+                translateX(-50%)
+                scale(0.96);
+        }
+
+        /* =========================
+           游戏画面
+        ========================= */
+
+        #game {
+
+            display: none;
+
             width: 100vw;
             height: 100vh;
+
             background: #6ab04c;
         }
 
     </style>
+
 </head>
+
 
 <body>
 
+
+<!-- =========================
+     游戏封面
+========================= -->
+
+<div id="cover">
+
+    <img src="cover.jpg">
+
+    <button id="startButton">
+        开始游戏
+    </button>
+
+</div>
+
+
+<!-- =========================
+     游戏
+========================= -->
+
 <canvas id="game"></canvas>
+
 
 <script>
 
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
+
+// ==========================================
+// 开始游戏
+// ==========================================
+
+const cover =
+    document.getElementById("cover");
+
+const startButton =
+    document.getElementById("startButton");
+
+const canvas =
+    document.getElementById("game");
+
+const ctx =
+    canvas.getContext("2d");
+
+
+startButton.addEventListener(
+    "click",
+    function () {
+
+        cover.style.display = "none";
+
+        canvas.style.display = "block";
+
+        startGame();
+
+    }
+);
+
+
+// ==========================================
+// 调整画面
+// ==========================================
 
 function resize() {
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.width =
+        window.innerWidth;
+
+    canvas.height =
+        window.innerHeight;
 
 }
 
+window.addEventListener(
+    "resize",
+    resize
+);
+
 resize();
 
-window.addEventListener("resize", resize);
 
-
-// ============================
+// ==========================================
 // 玩家
-// ============================
+// ==========================================
 
 const player = {
 
     x: 150,
+
     y: 250,
 
     size: 40,
@@ -71,145 +226,120 @@ const player = {
 };
 
 
-// ============================
-// 按键
-// ============================
+// ==========================================
+// 键盘
+// ==========================================
 
 const keys = {
 
     up: false,
+
     down: false,
+
     left: false,
+
     right: false
 
 };
 
 
-// ============================
+// ==========================================
 // 键盘控制
-// ============================
+// ==========================================
 
-document.addEventListener("keydown", function(e) {
+document.addEventListener(
+    "keydown",
+    function(e) {
 
-    if (e.key === "ArrowUp") {
-        keys.up = true;
+        if (e.key === "ArrowUp")
+            keys.up = true;
+
+        if (e.key === "ArrowDown")
+            keys.down = true;
+
+        if (e.key === "ArrowLeft")
+            keys.left = true;
+
+        if (e.key === "ArrowRight")
+            keys.right = true;
+
     }
+);
 
-    if (e.key === "ArrowDown") {
-        keys.down = true;
+
+document.addEventListener(
+    "keyup",
+    function(e) {
+
+        if (e.key === "ArrowUp")
+            keys.up = false;
+
+        if (e.key === "ArrowDown")
+            keys.down = false;
+
+        if (e.key === "ArrowLeft")
+            keys.left = false;
+
+        if (e.key === "ArrowRight")
+            keys.right = false;
+
     }
-
-    if (e.key === "ArrowLeft") {
-        keys.left = true;
-    }
-
-    if (e.key === "ArrowRight") {
-        keys.right = true;
-    }
-
-});
+);
 
 
-document.addEventListener("keyup", function(e) {
-
-    if (e.key === "ArrowUp") {
-        keys.up = false;
-    }
-
-    if (e.key === "ArrowDown") {
-        keys.down = false;
-    }
-
-    if (e.key === "ArrowLeft") {
-        keys.left = false;
-    }
-
-    if (e.key === "ArrowRight") {
-        keys.right = false;
-    }
-
-});
-
-
-// ============================
-// 手机方向键
-// ============================
-
-function button(x, y, w, h, text, direction) {
-
-    ctx.fillStyle = "rgba(0,0,0,0.5)";
-
-    ctx.fillRect(x, y, w, h);
-
-    ctx.fillStyle = "white";
-
-    ctx.font = "28px Arial";
-
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-
-    ctx.fillText(
-        text,
-        x + w / 2,
-        y + h / 2
-    );
-
-}
-
-
-// ============================
-// 更新玩家
-// ============================
+// ==========================================
+// 游戏更新
+// ==========================================
 
 function update() {
 
-    if (keys.up) {
+    if (keys.up)
         player.y -= player.speed;
-    }
 
-    if (keys.down) {
+    if (keys.down)
         player.y += player.speed;
-    }
 
-    if (keys.left) {
+    if (keys.left)
         player.x -= player.speed;
-    }
 
-    if (keys.right) {
+    if (keys.right)
         player.x += player.speed;
-    }
 
 
-    // 防止走出屏幕
+    player.x =
+        Math.max(
+            0,
+            Math.min(
+                canvas.width -
+                player.size,
+                player.x
+            )
+        );
 
-    player.x = Math.max(
-        0,
-        Math.min(
-            canvas.width - player.size,
-            player.x
-        )
-    );
 
-    player.y = Math.max(
-        0,
-        Math.min(
-            canvas.height - player.size,
-            player.y
-        )
-    );
+    player.y =
+        Math.max(
+            0,
+            Math.min(
+                canvas.height -
+                player.size,
+                player.y
+            )
+        );
 
 }
 
 
-// ============================
-// 绘制
-// ============================
+// ==========================================
+// 游戏画面
+// ==========================================
 
 function draw() {
 
-    // 地图
+    // 地面
 
-    ctx.fillStyle = "#6ab04c";
+    ctx.fillStyle =
+        "#6ab04c";
 
     ctx.fillRect(
         0,
@@ -219,9 +349,10 @@ function draw() {
     );
 
 
-    // 地面道路
+    // 道路
 
-    ctx.fillStyle = "#d9b382";
+    ctx.fillStyle =
+        "#d9b382";
 
     ctx.fillRect(
         0,
@@ -233,7 +364,8 @@ function draw() {
 
     // 玩家
 
-    ctx.fillStyle = "#e74c3c";
+    ctx.fillStyle =
+        "#e74c3c";
 
     ctx.fillRect(
         player.x,
@@ -242,80 +374,12 @@ function draw() {
         player.size
     );
 
-
-    // 玩家名字
-
-    ctx.fillStyle = "white";
-
-    ctx.font = "16px Arial";
-
-    ctx.textAlign = "center";
-
-    ctx.fillText(
-        "主角",
-        player.x + player.size / 2,
-        player.y - 8
-    );
-
-
-    // 手机方向键
-
-    const size = 60;
-
-    const gap = 10;
-
-    const x = 30;
-
-    const y =
-        canvas.height - 210;
-
-
-    button(
-        x + size + gap,
-        y,
-        size,
-        size,
-        "▲"
-    );
-
-    button(
-        x,
-        y + size + gap,
-        size,
-        size,
-        "◀"
-    );
-
-    button(
-        x + size + gap,
-        y + size + gap,
-        size,
-        size,
-        "●"
-    );
-
-    button(
-        x + (size + gap) * 2,
-        y + size + gap,
-        size,
-        size,
-        "▶"
-    );
-
-    button(
-        x + size + gap,
-        y + (size + gap) * 2,
-        size,
-        size,
-        "▼"
-    );
-
 }
 
 
-// ============================
+// ==========================================
 // 游戏循环
-// ============================
+// ==========================================
 
 function gameLoop() {
 
@@ -323,14 +387,25 @@ function gameLoop() {
 
     draw();
 
-    requestAnimationFrame(gameLoop);
+    requestAnimationFrame(
+        gameLoop
+    );
 
 }
 
 
-gameLoop();
+// ==========================================
+// 开始
+// ==========================================
+
+function startGame() {
+
+    gameLoop();
+
+}
 
 </script>
+
 
 </body>
 
