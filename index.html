@@ -75,6 +75,36 @@
 
 
         /* =========================
+           图片加载失败
+        ========================= */
+
+        #imageError {
+
+            display: none;
+
+            position: absolute;
+
+            left: 50%;
+            top: 50%;
+
+            transform: translate(
+                -50%,
+                -50%
+            );
+
+            color: white;
+
+            font-size: 18px;
+
+            text-align: center;
+
+            line-height: 1.8;
+
+            z-index: 2;
+        }
+
+
+        /* =========================
            开始按钮
         ========================= */
 
@@ -148,10 +178,16 @@
 
 <div id="cover">
 
-    <!-- 你的封面图片 -->
+    <img
+        src="./IMG_2307.jpeg"
+        alt="RPG游戏封面"
+        id="coverImage"
+    >
 
-    <img src="IMG_2307.jpeg"
-         alt="RPG游戏封面">
+    <div id="imageError">
+        封面图片加载失败<br>
+        请检查 IMG_2307.jpeg 是否和 index.html 在同一个文件夹
+    </div>
 
     <button id="startButton">
         开始游戏
@@ -185,6 +221,28 @@ const canvas =
 
 const ctx =
     canvas.getContext("2d");
+
+const coverImage =
+    document.getElementById("coverImage");
+
+const imageError =
+    document.getElementById("imageError");
+
+
+// ==========================================
+// 检查封面图片
+// ==========================================
+
+coverImage.addEventListener(
+    "error",
+    function () {
+
+        coverImage.style.display = "none";
+
+        imageError.style.display = "block";
+
+    }
+);
 
 
 // ==========================================
